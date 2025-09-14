@@ -1,4 +1,5 @@
 import random
+import argparse
 
 class TicTacToe:
     def __init__(self):
@@ -70,15 +71,16 @@ class Player:
             return None
             
 class AI:
-    def __init__(self, letter: str):
+    def __init__(self, letter: str, epsilon: float):
         self.letter = letter
         self.opponent = "O" if letter == 'X' else 'X'
         
         self.isAI = True
+        self.epsilon = epsilon
         
     def getInput(self, board):
         avail = self.avail(board)
-        if len(avail) == 9:
+        if len(avail) == 9 or random.random() < self.epsilon:
             bx, by = random.choice(avail)
             return self.logger(bx, by)
         
@@ -190,9 +192,9 @@ def play(t, x, o, log=True):
                 print("It's a draw!")
             break
 
-def playerVsAI():
+def playerVsAI(epsilon: float):
     x = Player('X')
-    o = AI('O')
+    o = AI('O', epsilon)
     t = TicTacToe()
     while True:
         play(t, x, o, log=True)
@@ -202,9 +204,9 @@ def playerVsAI():
             print('Thank you for playing!')
             break
         
-def aiVsai():
-    x = AI('X')
-    o = AI('O')
+def aiVsai(epsilon: float):
+    x = AI('X', epsilon)
+    o = AI('O', epsilon)
     t = TicTacToe()
     play(t, x, o, log=True)
     
@@ -220,5 +222,25 @@ def playerVsplayer():
             print('Thank you for playing!')
             break
         
+def main():
+    parser = argparse.ArgumentParser(description='Play TicTacToe!')
+    parser.add_argument('--mode', choices=['pvp', 'pvai', 'aivai'], default='pvai')
+    parser.add_argument('--level', type=int, default=2, choices=range(0, 4), help='AI difficulty: 0=Easy, 1=Medium, 2=Hard, 3=Impossible (perfect)')
+    args = parser.parse_args()
+    
+    DIFFICULTY = {
+        0: 0.5,     # Easy
+        1: 0.2,     # Medium
+        2: 0.05,    # Hard
+        3: 0.0,     #Imposible
+    }
+    epsilon = DIFFICULTY[args.level]
+    if args.mode == 'pvp':
+        playerVsplayer()
+    elif args.mode == 'pvai':
+        playerVsAI(epsilon)
+    elif args.mode == 'aivai':
+        aiVsai(epsilon)
+        
 if __name__ == "__main__":
-    aiVsai()
+    main()
