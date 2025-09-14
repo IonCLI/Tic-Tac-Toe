@@ -234,7 +234,7 @@ def main():
         2: 0.05,    # Hard
         3: 0.0,     #Imposible
     }
-    epsilon = DIFFICULTY[args.level]
+    epsilon = DIFFICULTY.get(args.level, 3)
     if args.mode == 'pvp':
         playerVsplayer()
     elif args.mode == 'pvai':
@@ -243,4 +243,5 @@ def main():
         aiVsai(epsilon)
         
 if __name__ == "__main__":
+
     main()
